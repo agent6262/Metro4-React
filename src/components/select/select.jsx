@@ -204,7 +204,7 @@ export default class Select extends React.Component {
         const {multiple, onDrawItem, onFilter} = this.props;
         const {filter, value} = this.state;
 
-        hidden = multiple ? value.indexOf(val) !== -1 : filter !== "" && !onFilter(filter, cap);
+        hidden = multiple ? value.indexOf(val) !== -1 || (filter !== "" && !onFilter(filter, cap)) : filter !== "" && !onFilter(filter, cap);
 
         return (
             <li hidden={hidden}
