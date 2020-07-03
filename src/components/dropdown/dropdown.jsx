@@ -25,7 +25,7 @@ export default class Dropdown extends React.Component {
     }
 
     handleClickOutside (event) {
-        if (this.dropdown.current && !this.dropdown.current.contains(event.target)) {
+        if (this.dropdown.current && !this.dropdown.current.contains(event.target)  && this.props.autoClose) {
             this.setState({
                 open: false,
             });
@@ -62,6 +62,7 @@ export default class Dropdown extends React.Component {
 
 Dropdown.defaultProps = {
     as: "div",
+    autoClose: true,
     speed: 100,
     position: "absolute",
     cls: "",

@@ -199,12 +199,20 @@ export default class Select extends React.Component {
 
     };
 
+    subFilterCheck(value, val) {
+        for (let i = 0; i < value.length; i++) {
+            if (value[i].split('#')[1] === val.split('#')[1]) {
+                return 0;
+            }
+        }
+        return -1;
+    }
+
     createListItem (val, cap) {
         let hidden;
         const {multiple, onDrawItem, onFilter} = this.props;
         const {filter, value} = this.state;
-
-        hidden = multiple ? value.indexOf(val) !== -1 : filter !== "" && !onFilter(filter, cap);
+        hidden = multiple ? this.subFilterCheck(value, val) !== -1 || (filter !== "" && !onFilter(filter, cap)) : filter !== "" && !onFilter(filter, cap);
 
         return (
             <li hidden={hidden}
