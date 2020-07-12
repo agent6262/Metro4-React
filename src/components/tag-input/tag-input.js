@@ -52,7 +52,7 @@ export default class TagInput extends React.Component {
         }
 
         // TODO replace "," to tagTrigger
-        val = val.replace(",", "");
+        val = val.replace(" ", "");
 
         tags.push(val);
         input.value = "";
@@ -163,7 +163,7 @@ TagInput.defaultProps = {
     staticMode: false,
     tags: [],
     maxTags: 0,
-    tagTrigger: [13, 188],
+    tagTrigger: [32, 188],
     clsTag: "",
     clsTagTitle: "",
     clsTagRemover: "",

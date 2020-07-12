@@ -6,7 +6,7 @@ import Input from "../input/input.jsx";
 import Tag from "../tag/tag.jsx"
 
 export default class Select extends React.Component {
-    static getDerivedStateFromProps(props, state){
+    static getDerivedStateFromProps(props, state) {
         if (props.value !== state.initValue || props.fieldState !== state.fieldState) {
             return {
                 value: props.value,
@@ -45,14 +45,15 @@ export default class Select extends React.Component {
         this.createListItemGroupTitle = this.createListItemGroupTitle.bind(this);
         this.handleListClick = this.handleListClick.bind(this);
         this.createListItem = this.createListItem.bind(this);
+        this.onKeyDown = this.onKeyDown.bind(this);
     }
 
-    selectChange(){
-        const event = new Event('change', { bubbles: true, composed: true });
+    selectChange() {
+        const event = new Event('change', {bubbles: true, composed: true});
         this.select.current.dispatchEvent(event);
     }
 
-    tagClick(e){
+    tagClick(e) {
         if (!e.target.classList.contains("remover")) {
             return false;
         }
@@ -73,7 +74,7 @@ export default class Select extends React.Component {
         e.stopPropagation();
     }
 
-    selectClick(){
+    selectClick() {
         const isOpen = this.state.open;
 
         this.setState({
@@ -81,25 +82,76 @@ export default class Select extends React.Component {
         });
 
         if (!isOpen) {
-            setTimeout( () => {
+            setTimeout(() => {
                 if (this.input.current) this.input.current.focus();
-            }, 100 );
+            }, 100);
         }
     }
 
-    inputChange(e){
+    inputChange(e) {
         this.setState({
             filter: e.target.value
         })
     }
 
-    close(){
+    onKeyDown(e) {
+        if (e.key === 'Enter') {
+
+            let items = [];
+            let val = "";
+            console.log(items);
+            Children.toArray(this.props.children).forEach(el => {
+                if (el.type === 'option') {
+                    if (val === "" && !this.checkIfActive(el.props.value, el.props.children)) {
+                        val = el.props.value
+                    }
+                    if (!this.checkIfActive(el.props.value, el.props.children)) {
+                        items.push(el.props.children);
+                    }
+                } else if (el.type === 'optgroup') {
+                    Children.toArray(el.props.children).forEach(el => {
+                        if (val === "" && this.checkIfActive(el.props.value, el.props.children)) {
+                            val = el.props.value
+                        }
+                        if (this.checkIfActive(el.props.value, el.props.children)) {
+                            items.push(el.props.children);
+                        }
+                    })
+                }
+            });
+            console.log(items);
+
+            if (val !== "") {
+                if (this.props.multiple) {
+                    if (this.state.value.indexOf(val) === -1) this.state.value.push(val);
+                    this.setState({
+                        filter: "",
+                        value: this.state.value
+                    })
+                } else {
+                    this.setState({
+                        open: false,
+                        filter: "",
+                        value: val
+                    });
+                }
+            }
+        }
+    }
+
+    checkIfActive(val, cap) {
+        const {multiple, onFilter} = this.props;
+        const {filter, value} = this.state;
+        return multiple ? this.subFilterCheck(value, val) !== -1 || (filter !== "" && !onFilter(filter, cap)) : filter !== "" && !onFilter(filter, cap);
+    }
+
+    close() {
         this.setState({
             open: false
         })
     }
 
-    componentDidUpdate(prevProps, prevState){
+    componentDidUpdate(prevProps, prevState) {
         if (prevState.value !== this.state.value) {
             this.selectChange();
         }
@@ -127,7 +179,7 @@ export default class Select extends React.Component {
         }
     }
 
-    handleComponentKeydown (e) {
+    handleComponentKeydown(e) {
         // for correct keyboard behavior for search input
         if ((e.target.tagName || '').toLowerCase() === 'input') {
             return true;
@@ -150,14 +202,14 @@ export default class Select extends React.Component {
         e.preventDefault();
     };
 
-    handleSelectFocusing (e) {
+    handleSelectFocusing(e) {
         this.setState({
             focus: e.type === 'focus'
         });
-        this.props[ e.type === 'focus' ? 'onFocus' : 'onBlur' ](e);
+        this.props[e.type === 'focus' ? 'onFocus' : 'onBlur'](e);
     };
 
-    handleClickOutside (e) {
+    handleClickOutside(e) {
         if (this.component.current && !this.component.current.contains(e.target)) {
             this.setState({
                 open: false,
@@ -165,11 +217,11 @@ export default class Select extends React.Component {
         }
     };
 
-    createListItemGroupTitle (cap) {
+    createListItemGroupTitle(cap) {
         return <li className={'group-title'}>{cap}</li>;
     };
 
-    handleListClick (e) {
+    handleListClick(e) {
         let node = e.target;
 
         while (node.tagName !== 'LI') {
@@ -208,7 +260,7 @@ export default class Select extends React.Component {
         return -1;
     }
 
-    createListItem (val, cap) {
+    createListItem(val, cap) {
         let hidden;
         const {multiple, onDrawItem, onFilter} = this.props;
         const {filter, value} = this.state;
@@ -216,7 +268,7 @@ export default class Select extends React.Component {
 
         return (
             <li hidden={hidden}
-                className={ !multiple && value === val ? 'active' : '' }
+                className={!multiple && value === val ? 'active' : ''}
                 data-value={val}
             >
                 <a>{onDrawItem(cap)}</a>
@@ -265,29 +317,33 @@ export default class Select extends React.Component {
         return (
             <React.Fragment>
                 <label tabIndex={1}
-                       className={`select ${cls} ${className} ${focus ? 'focused':''} + ${multiple ? 'multiple':''} ${fieldState === 'error' ? 'invalid' : fieldState === 'success' ? 'success' : ''}`}
+                       className={`select ${cls} ${className} ${focus ? 'focused' : ''} + ${multiple ? 'multiple' : ''} ${fieldState === 'error' ? 'invalid' : fieldState === 'success' ? 'success' : ''}`}
                        ref={this.component}>
 
-                    <span className={'dropdown-toggle ' + (` ${clsDropdownToggle} `) + (open ? 'active-toggle':'')} onClick={this.selectClick}/>
+                    <span className={'dropdown-toggle ' + (` ${clsDropdownToggle} `) + (open ? 'active-toggle' : '')}
+                          onClick={this.selectClick}/>
 
                     <select value={value} multiple={multiple}
                             ref={this.select}
                             onChange={onChange}
                             name={this.props.name}
+                            id={this.props.selectId}
                     >
-                        {source && Object.keys(source).map( (key, ind) => {
+                        {source && Object.keys(source).map((key, ind) => {
                             return (
-                                <option  key={ind} value={source[key]}>{key}</option>
+                                <option key={ind} value={source[key]}>{key}</option>
                             )
-                        } )}
+                        })}
 
                         {this.props.children}
                     </select>
 
-                    <div className={'select-input ' + clsSelected } ref={this.selectInput} onClick={this.selectClick}>
-                        {multiple && value.map( function(el, index){
+                    <div className={'select-input ' + clsSelected} ref={this.selectInput} onClick={this.selectClick}>
+                        {multiple && value.map(function (el, index) {
                             return (
-                                <Tag cls={clsTag} key={index} onClick={tagClick} data-value={el}>{options[el]}</Tag>
+                                <Tag cls={clsTag} clsIndex={clsTag} indexVal={"(" + (index + 1) + ")"} key={index}
+                                     onClick={tagClick}
+                                     data-value={el}>{options[el]}</Tag>
                             )
                         })}
 
@@ -301,7 +357,9 @@ export default class Select extends React.Component {
                     </div>
 
                     <Collapse isOpen={open} className={'drop-container'} transition={transition}>
-                        { this.props.filter && <Input onChange={this.inputChange} ref={this.input} placeholder={searchPlaceholder} value={filter}/> }
+                        {this.props.filter &&
+                        <Input onChange={this.inputChange} onKeyDown={this.onKeyDown} ref={this.input}
+                               placeholder={searchPlaceholder} value={filter}/>}
                         <ul className={'d-menu'} style={{maxHeight: dropHeight}} onClick={this.handleListClick}>
                             {items}
                         </ul>
@@ -343,10 +401,14 @@ Select.defaultProps = {
     clsPrepend: "",
     clsAppend: "",
     clsDropdownToggle: "",
-    onFilter: (filter, cap) => (~(""+cap).toLowerCase().indexOf(filter.toLowerCase())),
-    onChange: () => {},
-    onFocus: () => {},
-    onBlur: () => {},
+    onFilter: (filter, cap) => (~("" + cap).toLowerCase().indexOf(filter.toLowerCase())),
+    onChange: () => {
+    },
+    onFocus: () => {
+    },
+    onBlur: () => {
+    },
     onDrawItem: (item) => item,
-    onDrawCaption: ( caption ) => caption
+    onDrawCaption: (caption) => caption,
+    selectId: ""
 };

@@ -12,10 +12,11 @@ export default class Tag extends React.Component {
     };
 
     render() {
-        const {cls, clsTitle, clsRemover, ...addProps} = this.props;
+        const {cls, clsTitle, clsRemover, clsIndex, indexVal, ...addProps} = this.props;
         return (
             <div className={'tag ' + cls} {...addProps}>
                 <span className={'title ' + clsTitle}>{this.props.children}</span>
+                <span className={'index ' + clsIndex}>{this.props.indexVal}</span>
                 <span className={'remover ' + clsRemover} onClick={this.onClick}>&times;</span>
             </div>
         )
@@ -25,6 +26,8 @@ export default class Tag extends React.Component {
 Tag.defaultProps = {
     cls: "",
     clsTitle: "",
+    clsIndex: "",
+    indexVal: "",
     clsRemover: "",
     onClick: () => {}
 };

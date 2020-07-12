@@ -22,6 +22,18 @@
   padding: 0 8px;
   height: 100%;
 }
+.tag .index {
+  display: block;
+  position: relative;
+  max-width: 120px;
+  font-size: 14px;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  margin: 0;
+  padding-right: 8px;
+  height: 100%;
+}
 .tag .remover {
   display: block;
   position: relative;
