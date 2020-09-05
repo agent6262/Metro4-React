@@ -76,7 +76,21 @@ export default class TagInput extends React.Component {
     };
 
     onBlur (e) {
+        const input = e.target;
+        let val = input.value.trim();
+        const {tags} = this.state;
+
+        if (val === "") {
+            return;
+        }
+
+        // TODO replace "," to tagTrigger
+        val = val.replace(" ", "");
+
+        tags.push(val);
+        input.value = "";
         this.setState({
+            tags: tags,
             focus: false
         });
         this.props.onBlur(e);

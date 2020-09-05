@@ -99,7 +99,6 @@ export default class Select extends React.Component {
 
             let items = [];
             let val = "";
-            console.log(items);
             Children.toArray(this.props.children).forEach(el => {
                 if (el.type === 'option') {
                     if (val === "" && !this.checkIfActive(el.props.value, el.props.children)) {
@@ -119,7 +118,6 @@ export default class Select extends React.Component {
                     })
                 }
             });
-            console.log(items);
 
             if (val !== "") {
                 if (this.props.multiple) {
