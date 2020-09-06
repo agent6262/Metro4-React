@@ -94,6 +94,7 @@ export default class TagInput extends React.Component {
             focus: false
         });
         this.props.onBlur(e);
+        this.onChange(tags);
     };
 
     onClick () {
